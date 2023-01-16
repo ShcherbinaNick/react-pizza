@@ -23,7 +23,6 @@ function App() {
             <PizzaBlock />
             <PizzaBlock />
             <PizzaBlock />
-            <PizzaBlock />
           </div>
         </div>
       </div>

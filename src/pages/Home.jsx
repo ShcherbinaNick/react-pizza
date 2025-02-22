@@ -17,6 +17,7 @@ function Home() {
       setPizzas(pizzasArr);
       setIsLoading(false);
     })
+    window.scrollTo(0, 0);
   }, [])
 
   return (

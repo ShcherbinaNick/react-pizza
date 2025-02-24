@@ -9,22 +9,33 @@ function Home() {
 
   const [ pizzas, setPizzas ] = React.useState([]);
   const [ isLoading, setIsLoading ] = React.useState(true);
-
+  const [ categoryId, setCategoryId ] = React.useState(1);
+  const [ selectedSortType, setSelectedSortType ] = React.useState({
+    name: 'популярности(возр.)',
+    sortProperty: 'rating'
+  });
+  
   React.useEffect(() => {
-    fetch('https://67b5a50207ba6e59083dcc60.mockapi.io/pizzas')
+    setIsLoading(true);
+
+    const category = categoryId > 0 ? `category=${categoryId}` : '';
+    const sortBy = selectedSortType.sortProperty.replace('-', '');
+    const order = selectedSortType.sortProperty.includes('-') ? 'desc' : 'asc';
+
+    fetch(`https://67b5a50207ba6e59083dcc60.mockapi.io/pizzas?${category}&sortBy=${sortBy}&order=${order}`)
     .then(res => res.json())
     .then((pizzasArr) => {
       setPizzas(pizzasArr);
       setIsLoading(false);
     })
     window.scrollTo(0, 0);
-  }, [])
+  }, [categoryId, selectedSortType])  
 
   return (
     <>
       <div className="content__top">
-        <Categories />
-        <Sort />
+        <Categories value={ categoryId } onChangeCategory={(i) => setCategoryId(i) } />
+        <Sort value={ selectedSortType } onChangeSort={(i) => setSelectedSortType(i) } />
       </div>
       {isLoading ? <Preloader /> : 
       <>

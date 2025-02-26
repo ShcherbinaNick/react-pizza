@@ -1,0 +1,38 @@
+.label {
+  display: flex;
+  align-items: center;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  padding: 10px 15px;
+  width: 300px;
+  @media (max-width: 1000px) {
+    margin-top: 10px;   
+  }
+}
+
+.input {
+  border: none;
+  margin-left: 10px;
+  width: 80%;
+}
+
+@mixin icon {
+  border: none;
+  background-color: rgb(255, 255, 255);
+  width: 20px;
+  height: 20px;
+  background-size: cover;
+  opacity: 0.5;
+  cursor: pointer;
+  background-repeat: no-repeat;
+}
+
+.icon_btn_find {
+  @include icon;
+  background-image: url('../../assets/img/icons-search.png');
+}
+
+.icon_btn_close {
+  @include icon;
+  background-image: url('../../assets/img/icons-close.png');
+}

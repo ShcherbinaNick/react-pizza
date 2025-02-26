@@ -27,7 +27,7 @@ body {
   &__items {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    grid-template-rows: repeat(2, 1fr);
+    grid-template-rows: repeat(1, 1fr);
     grid-column-gap: 20px;
     grid-row-gap: 20px;
   }
@@ -75,7 +75,7 @@ body {
     }
   }
 
-  @media (max-width: 560px) {
+  @media (max-width: 1000px) {
     flex-direction: column;
 
     .header__cart {

@@ -5,12 +5,14 @@ import Sort from '../components/Sort';
 import PizzaBlock from '../components/PizzaBlock';
 import Preloader from '../components/Preloader';
 import Pagination from '../Pagination'
+import { SearchContext } from '../App';
 
-function Home({ searchValue }) {
+function Home() {
 
+  const { searchValue } = React.useContext(SearchContext);
   const [ pizzas, setPizzas ] = React.useState([]);
   const [ isLoading, setIsLoading ] = React.useState(true);
-  const [ categoryId, setCategoryId ] = React.useState(0);
+  const [ categoryId, setCategoryId ] = React.useState(1);
   const [ currentPage, setCurrentPage ] = React.useState(1);
   const [ selectedSortType, setSelectedSortType ] = React.useState({
     name: 'популярности(возр.)',

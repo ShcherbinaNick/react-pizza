@@ -6,6 +6,7 @@ import Sort from '../components/Sort';
 import PizzaBlock from '../components/PizzaBlock';
 import Preloader from '../components/Preloader';
 import { SearchContext } from '../App';
+import axios from 'axios';
 
 function Home() {
   const dispatch = useDispatch();
@@ -29,12 +30,16 @@ function Home() {
     const order = selectedSortType.includes('-') ? 'desc' : 'asc';
     const search = searchValue ? `&search=${searchValue}` : '';
 
-    fetch(
-      `https://67b5a50207ba6e59083dcc60.mockapi.io/pizzas?&${category}&sortBy=${sortBy}&order=${order}${search}`
-    )
-      .then((res) => res.json())
-      .then((pizzasArr) => {
-        setPizzas(pizzasArr);
+    axios
+      .get(
+        `https://67b5a50207ba6e59083dcc60.mockapi.io/pizzas?&${category}&sortBy=${sortBy}&order=${order}${search}`
+      )
+      .then((res) => {
+        setPizzas(res.data);
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        console.log(err);
         setIsLoading(false);
       });
     window.scrollTo(0, 0);
@@ -52,9 +57,9 @@ function Home() {
         <>
           <h2 className='content__title'>Все пиццы</h2>
           <div className='content__items'>
-            {pizzas === 'Not found'
-              ? 'Не найдено'
-              : pizzas.map((pizza) => <PizzaBlock key={pizza.id} {...pizza} />)}
+            {pizzas // вот тут проверку надо поправить, когда в поиске ничего не найдено - выводится массив всех пицц всё равно
+              ? pizzas.map((pizza) => <PizzaBlock key={pizza.id} {...pizza} />)
+              : 'Не найдено'}
           </div>
         </>
       )}

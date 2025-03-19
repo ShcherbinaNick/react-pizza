@@ -1,24 +1,42 @@
 import React from 'react';
 import { SearchContext } from '../../App';
 import styles from './Search.module.scss';
+import debounce from 'lodash.debounce';
 
 function Search() {
+  const [value, setValue] = React.useState('');
+  const { setSearchValue } = React.useContext(SearchContext);
 
-  const { searchValue, setSearchValue } = React.useContext(SearchContext);
-  
+  const updatedSearchValue = React.useCallback(
+    debounce((str) => {
+      setSearchValue(str);
+    }, 1000),
+    []
+  );
+
+  const onClickClear = () => {
+    setValue('');
+    setSearchValue('');
+  }
+
+  const onChangeInput = (event) => {
+    setValue(event.target.value);
+    updatedSearchValue(event.target.value);
+  };
+
   return (
     <label className={styles.label}>
       <button className={styles.icon_btn_find}></button>
       <input
-        value={searchValue}
-        onChange={(event) => setSearchValue(event.target.value)}
+        value={value}
+        onChange={onChangeInput}
         className={styles.input}
         placeholder='Название пиццы...'
         type='text'
       />
-      {searchValue && (
+      {value && (
         <button
-          onClick={() => setSearchValue('')}
+          onClick={onClickClear}
           className={styles.icon_btn_close}
         ></button>
       )}

@@ -1,15 +1,20 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setCategoryId } from '../redux/Slices/filterSlice';
+import { setCategoryId, setFilters } from '../redux/Slices/filterSlice';
 import Categories from '../components/Categories';
-import Sort from '../components/Sort';
+import Sort, { sortList } from '../components/Sort';
 import PizzaBlock from '../components/PizzaBlock';
 import Preloader from '../components/Preloader';
 import { SearchContext } from '../App';
 import axios from 'axios';
+import qs from 'qs';
+import { useNavigate } from 'react-router-dom';
 
 function Home() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const isSearch = React.useRef(false);
+  const isMounted = React.useRef(false);
 
   const { categoryId, sortType } = useSelector((state) => state.filter);
   const selectedSortType = sortType.sortProperty;
@@ -22,7 +27,20 @@ function Home() {
     dispatch(setCategoryId(id));
   };
 
+  // Если был первый рендер - проверяем URL параметры и сохраняем в редаксе
   React.useEffect(() => {
+    if (window.location.search) {
+      const params = qs.parse(window.location.search.substring(1));
+
+      const sort = sortList.find(
+        (obj) => obj.sortProperty === params.sortProperty
+      );
+      dispatch(setFilters({ ...params, sort }));
+      isSearch.current = true;
+    }
+  }, []);
+
+  const fetchPizzas = () => {
     setIsLoading(true);
 
     const category = categoryId > 0 ? `category=${categoryId}` : '';
@@ -42,7 +60,29 @@ function Home() {
         console.log(err);
         setIsLoading(false);
       });
+  };
+
+  // Если изменили параметры и был первый рендер
+  React.useEffect(() => {
+    if (isMounted.current) {
+      const queryStr = qs.stringify({
+        sortProperty: selectedSortType,
+        categoryId,
+      });
+  
+      navigate(`?${queryStr}`);
+    }
+    isMounted.current = true;
+  }, [categoryId, selectedSortType]);
+
+
+// Нужно ли мне делать запрос на изменение пицц?
+  React.useEffect(() => {
     window.scrollTo(0, 0);
+    if (!isSearch.current) {
+      fetchPizzas();
+    }
+    isSearch.current = false;
   }, [categoryId, selectedSortType, searchValue]);
 
   return (

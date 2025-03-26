@@ -17,11 +17,12 @@ function Home() {
   const isMounted = React.useRef(false);
 
   const { categoryId, sortType } = useSelector((state) => state.filter);
-  const selectedSortType = sortType.sortProperty;
+
 
   const { searchValue } = React.useContext(SearchContext);
   const [pizzas, setPizzas] = React.useState([]);
   const [isLoading, setIsLoading] = React.useState(true);
+  const selectedSortType = sortType.sortProperty;
 
   const onChangeCategory = (id) => {
     dispatch(setCategoryId(id));
@@ -66,14 +67,14 @@ function Home() {
   React.useEffect(() => {
     if (isMounted.current) {
       const queryStr = qs.stringify({
-        sortProperty: selectedSortType,
+        sortType,
         categoryId,
       });
   
       navigate(`?${queryStr}`);
     }
     isMounted.current = true;
-  }, [categoryId, selectedSortType]);
+  }, [categoryId, sortType]);
 
 
 // Нужно ли мне делать запрос на изменение пицц?
@@ -96,7 +97,7 @@ function Home() {
       ) : (
         <>
           <h2 className='content__title'>Все пиццы</h2>
-          <div className='content__items'>
+          <div className='content__items'>            
             {pizzas // вот тут проверку надо поправить, когда в поиске ничего не найдено - выводится массив всех пицц всё равно
               ? pizzas.map((pizza) => <PizzaBlock key={pizza.id} {...pizza} />)
               : 'Не найдено'}

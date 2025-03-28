@@ -6,9 +6,9 @@ import Sort, { sortList } from '../components/Sort';
 import PizzaBlock from '../components/PizzaBlock';
 import Preloader from '../components/Preloader';
 import { SearchContext } from '../App';
-import axios from 'axios';
 import qs from 'qs';
 import { useNavigate } from 'react-router-dom';
+import { fetchPizzas } from '../redux/Slices/PizzasSlice';
 
 function Home() {
   const dispatch = useDispatch();
@@ -16,16 +16,31 @@ function Home() {
   const isSearch = React.useRef(false);
   const isMounted = React.useRef(false);
 
+  const { items, status } = useSelector((state) => state.pizza);
   const { categoryId, sortType } = useSelector((state) => state.filter);
 
-
   const { searchValue } = React.useContext(SearchContext);
-  const [pizzas, setPizzas] = React.useState([]);
-  const [isLoading, setIsLoading] = React.useState(true);
+
   const selectedSortType = sortType.sortProperty;
 
   const onChangeCategory = (id) => {
     dispatch(setCategoryId(id));
+  };
+
+  const getPizzas = async () => {
+    const category = categoryId > 0 ? `category=${categoryId}` : '';
+    const sortBy = selectedSortType.replace('-', '');
+    const order = selectedSortType.includes('-') ? 'desc' : 'asc';
+    const search = searchValue ? `&search=${searchValue}` : '';
+
+    dispatch(
+      fetchPizzas({
+        category,
+        sortBy,
+        order,
+        search,
+      })
+    );
   };
 
   // Если был первый рендер - проверяем URL параметры и сохраняем в редаксе
@@ -41,28 +56,6 @@ function Home() {
     }
   }, []);
 
-  const fetchPizzas = () => {
-    setIsLoading(true);
-
-    const category = categoryId > 0 ? `category=${categoryId}` : '';
-    const sortBy = selectedSortType.replace('-', '');
-    const order = selectedSortType.includes('-') ? 'desc' : 'asc';
-    const search = searchValue ? `&search=${searchValue}` : '';
-
-    axios
-      .get(
-        `https://67b5a50207ba6e59083dcc60.mockapi.io/pizzas?&${category}&sortBy=${sortBy}&order=${order}${search}`
-      )
-      .then((res) => {
-        setPizzas(res.data);
-        setIsLoading(false);
-      })
-      .catch((err) => {
-        console.log(err);
-        setIsLoading(false);
-      });
-  };
-
   // Если изменили параметры и был первый рендер
   React.useEffect(() => {
     if (isMounted.current) {
@@ -70,18 +63,17 @@ function Home() {
         sortType,
         categoryId,
       });
-  
+
       navigate(`?${queryStr}`);
     }
     isMounted.current = true;
   }, [categoryId, sortType]);
 
-
-// Нужно ли мне делать запрос на изменение пицц?
+  // Нужно ли мне делать запрос на изменение пицц?
   React.useEffect(() => {
     window.scrollTo(0, 0);
     if (!isSearch.current) {
-      fetchPizzas();
+      getPizzas();
     }
     isSearch.current = false;
   }, [categoryId, selectedSortType, searchValue]);
@@ -92,16 +84,24 @@ function Home() {
         <Categories value={categoryId} onChangeCategory={onChangeCategory} />
         <Sort />
       </div>
-      {isLoading ? (
-        <Preloader />
+      {status === 'error' ? (
+        <div>ОШИБОЧКА, не получилось получить пиццы!</div>
       ) : (
         <>
-          <h2 className='content__title'>Все пиццы</h2>
-          <div className='content__items'>            
-            {pizzas // вот тут проверку надо поправить, когда в поиске ничего не найдено - выводится массив всех пицц всё равно
-              ? pizzas.map((pizza) => <PizzaBlock key={pizza.id} {...pizza} />)
-              : 'Не найдено'}
-          </div>
+          {status === 'loading' ? (
+            <Preloader />
+          ) : (
+            <>
+              <h2 className='content__title'>Все пиццы</h2>
+              <div className='content__items'>
+                {items // вот тут проверку надо поправить, когда в поиске ничего не найдено - выводится массив всех пицц всё равно
+                  ? items.map((pizza) => (
+                      <PizzaBlock key={pizza.id} {...pizza} />
+                    ))
+                  : 'Не найдено'}
+              </div>
+            </>
+          )}
         </>
       )}
     </>

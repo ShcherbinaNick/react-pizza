@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setCategoryId, setFilters } from '../redux/Slices/filterSlice';
+import { selectFilter, setCategoryId, setFilters } from '../redux/Slices/filterSlice';
 import Categories from '../components/Categories';
 import Sort, { sortList } from '../components/Sort';
 import PizzaBlock from '../components/PizzaBlock';
@@ -8,7 +8,7 @@ import Preloader from '../components/Preloader';
 import { SearchContext } from '../App';
 import qs from 'qs';
 import { useNavigate } from 'react-router-dom';
-import { fetchPizzas } from '../redux/Slices/PizzasSlice';
+import { fetchPizzas, selectPizzaData } from '../redux/Slices/PizzasSlice';
 
 function Home() {
   const dispatch = useDispatch();
@@ -16,10 +16,8 @@ function Home() {
   const isSearch = React.useRef(false);
   const isMounted = React.useRef(false);
 
-  const { items, status } = useSelector((state) => state.pizza);
-  const { categoryId, sortType } = useSelector((state) => state.filter);
-
-  const { searchValue } = React.useContext(SearchContext);
+  const { items, status } = useSelector(selectPizzaData);
+  const { categoryId, sortType, searchValue } = useSelector(selectFilter);
 
   const selectedSortType = sortType.sortProperty;
 
@@ -64,7 +62,7 @@ function Home() {
         categoryId,
       });
 
-      navigate(`?${queryStr}`);
+      navigate(`/?${queryStr}`);
     }
     isMounted.current = true;
   }, [categoryId, sortType]);

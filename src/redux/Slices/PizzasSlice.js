@@ -42,6 +42,8 @@ const pizzaSlice = createSlice({
   },
 });
 
+export const selectPizzaData = (state) => state.pizza;
+
 export const { setItems } = pizzaSlice.actions; // actions - это методы свойства reducers
 
 export default pizzaSlice.reducer;

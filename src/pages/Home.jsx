@@ -5,7 +5,6 @@ import Categories from '../components/Categories';
 import Sort, { sortList } from '../components/Sort';
 import PizzaBlock from '../components/PizzaBlock';
 import Preloader from '../components/Preloader';
-import { SearchContext } from '../App';
 import qs from 'qs';
 import { useNavigate } from 'react-router-dom';
 import { fetchPizzas, selectPizzaData } from '../redux/Slices/PizzasSlice';

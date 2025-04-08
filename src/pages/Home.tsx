@@ -9,7 +9,7 @@ import qs from 'qs';
 import { useNavigate } from 'react-router-dom';
 import { fetchPizzas, selectPizzaData } from '../redux/Slices/PizzasSlice';
 
-function Home() {
+const Home: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const isSearch = React.useRef(false);
@@ -20,7 +20,7 @@ function Home() {
 
   const selectedSortType = sortType.sortProperty;
 
-  const onChangeCategory = (id) => {
+  const onChangeCategory = (id: number) => {
     dispatch(setCategoryId(id));
   };
 
@@ -31,6 +31,7 @@ function Home() {
     const search = searchValue ? `&search=${searchValue}` : '';
 
     dispatch(
+      //@ts-ignore Типизацию редакса чуть позже поправим
       fetchPizzas({
         category,
         sortBy,
@@ -82,7 +83,7 @@ function Home() {
         <Sort />
       </div>
       {status === 'error' ? (
-        <div>ОШИБОЧКА, не получилось получить пиццы!</div>
+        <div>ОШИБОЧКА, скорее всего такой пиццы нет!</div>
       ) : (
         <>
           {status === 'loading' ? (
@@ -92,7 +93,7 @@ function Home() {
               <h2 className='content__title'>Все пиццы</h2>
               <div className='content__items'>
                 {items // вот тут проверку надо поправить, когда в поиске ничего не найдено - выводится массив всех пицц всё равно
-                  ? items.map((pizza) => (
+                  ? items.map((pizza: any) => (
                       <PizzaBlock key={pizza.id} {...pizza} />
                     ))
                   : 'Не найдено'}

@@ -1,6 +1,4 @@
-import React from 'react'
-
-const Preloader = () => {
+const Preloader: React.FC = () => {
     return (
         <div className="preloader">
             <div className="preloader__container">
